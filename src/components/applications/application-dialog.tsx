@@ -1,18 +1,11 @@
 'use client'
 
-import { Plus } from 'lucide-react'
-import { useState, useTransition } from 'react'
+import { useEffect, useState, useTransition } from 'react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
@@ -23,11 +16,12 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { createApplication } from '@/lib/applications/actions'
+import { createApplication, updateApplication } from '@/lib/applications/actions'
 import type { DocumentOption } from '@/lib/applications/queries'
 import { EMPTY_APPLICATION, type ApplicationInput } from '@/lib/applications/schema'
 import { STATUS_CONFIG, STATUS_ORDER, type ApplicationStatus } from '@/lib/applications/status'
 import { cn } from '@/lib/utils'
+
 
 const EMPLOYMENT_OPTIONS = [
   { value: 'full_time', label: 'Vollzeit' },
@@ -43,15 +37,26 @@ const STATUS_OPTIONS = STATUS_ORDER.map((status) => ({
 
 const NONE = '__none__'
 
-type NewApplicationDialogProps = {
+type ApplicationDialogProps = {
+  open: boolean
+  onOpenChange: (open: boolean) => void
   cvs: DocumentOption[]
   coverLetters: DocumentOption[]
+  /** Gesetzt heißt Bearbeiten, leer heißt Anlegen. */
+  application?: { id: string; values: ApplicationInput }
 }
 
-export function NewApplicationDialog({ cvs, coverLetters }: NewApplicationDialogProps) {
-  const [open, setOpen] = useState(false)
+export function ApplicationDialog({
+  open,
+  onOpenChange,
+  cvs,
+  coverLetters,
+  application,
+}: ApplicationDialogProps) {
+  const initial = application?.values ?? EMPTY_APPLICATION
+
   const [step, setStep] = useState<1 | 2>(1)
-  const [values, setValues] = useState<ApplicationInput>(EMPTY_APPLICATION)
+  const [values, setValues] = useState<ApplicationInput>(initial)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [pending, startTransition] = useTransition()
 
@@ -72,24 +77,41 @@ export function NewApplicationDialog({ cvs, coverLetters }: NewApplicationDialog
     }))
   }
 
-  function reset() {
-    setValues(EMPTY_APPLICATION)
+   function reset() {
+    setValues(initial)
     setFieldErrors({})
     setStep(1)
+    useEffect(() => {
+    if (!open) return
+
+    setValues(initial)
+    setFieldErrors({})
+    setStep(1)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open])
   }
 
   function handleOpenChange(next: boolean) {
-    setOpen(next)
+    onOpenChange(next)
     if (!next) reset()
+      useEffect(() => {
+    if (!open) return
+
+    setValues(initial)
+    setFieldErrors({})
+    setStep(1)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open])
   }
 
-  function handleSubmit() {
+    function handleSubmit() {
     startTransition(async () => {
-      const result = await createApplication(values)
+      const result = application
+        ? await updateApplication(application.id, values)
+        : await createApplication(values)
 
       if (result.error) {
         setFieldErrors(result.fieldErrors ?? {})
-        // Pflichtfelder liegen auf Schritt 1, dorthin zurückspringen
         if (result.fieldErrors?.company || result.fieldErrors?.position) {
           setStep(1)
         }
@@ -97,21 +119,16 @@ export function NewApplicationDialog({ cvs, coverLetters }: NewApplicationDialog
         return
       }
 
-      toast.success('Bewerbung angelegt.')
-      handleOpenChange(false)
+      toast.success(application ? 'Änderungen gespeichert.' : 'Bewerbung angelegt.')
+      onOpenChange(false)
     })
   }
 
-  return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger render={<Button />}>
-        <Plus />
-        Bewerbung hinzufügen
-      </DialogTrigger>
-
+    return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle>Neue Bewerbung</DialogTitle>
+          <DialogTitle>{application ? 'Bewerbung bearbeiten' : 'Neue Bewerbung'}</DialogTitle>
         </DialogHeader>
 
         {step === 1 ? (
@@ -223,6 +240,7 @@ export function NewApplicationDialog({ cvs, coverLetters }: NewApplicationDialog
               />
             </Field>
           </div>
+
         )}
 
         <div className="mt-2 flex items-center justify-between">
@@ -231,11 +249,11 @@ export function NewApplicationDialog({ cvs, coverLetters }: NewApplicationDialog
               Zurück
             </Button>
 
-            {step === 1 ? (
+                        {step === 1 ? (
               <Button onClick={() => setStep(2)}>Weiter</Button>
             ) : (
               <Button onClick={handleSubmit} disabled={pending}>
-                {pending ? 'Speichert …' : 'Speichern'}
+                {pending ? 'Speichert …' : application ? 'Speichern' : 'Anlegen'}
               </Button>
             )}
           </div>

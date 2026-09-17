@@ -57,9 +57,7 @@ export function ApplicationDetailContent({ application }: ApplicationDetailConte
           <Detail label="nächste Aktion">
             {formatDate(application.next_action_at)}
             {application.next_action_note ? (
-              <span className="block text-muted-foreground">
-                {application.next_action_note}
-              </span>
+              <span className="block text-muted-foreground">{application.next_action_note}</span>
             ) : null}
           </Detail>
         ) : null}
@@ -91,9 +89,7 @@ export function ApplicationDetailContent({ application }: ApplicationDetailConte
                 >
                   <span>
                     <span className="block font-medium">{document.title}</span>
-                    <span className="block text-sm text-muted-foreground">
-                      {document.kind}
-                    </span>
+                    <span className="block text-sm text-muted-foreground">{document.kind}</span>
                   </span>
                   <ExternalLink className="size-4 shrink-0 text-muted-foreground" />
                 </Link>
@@ -117,10 +113,7 @@ export function ApplicationDetailContent({ application }: ApplicationDetailConte
         <ol className="mt-3 space-y-4">
           {application.activities.map((activity) => (
             <li key={activity.id} className="flex gap-3">
-              <span
-                aria-hidden
-                className="mt-1.5 size-2 shrink-0 rounded-full bg-foreground"
-              />
+              <span aria-hidden className="mt-1.5 size-2 shrink-0 rounded-full bg-foreground" />
               <span>
                 <time className="block text-sm text-muted-foreground">
                   {formatDateTime(activity.created_at)}

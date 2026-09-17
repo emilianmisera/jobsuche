@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 
 import { ApplicationSheet } from '@/components/applications/application-sheet'
-import { getApplication } from '@/lib/applications/queries'
+import { getApplication, getFormOptions } from '@/lib/applications/queries'
 
 export default async function InterceptedApplicationPage({
   params,
@@ -9,9 +9,15 @@ export default async function InterceptedApplicationPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const application = await getApplication(id)
+  const [application, options] = await Promise.all([getApplication(id), getFormOptions()])
 
   if (!application) notFound()
 
-  return <ApplicationSheet application={application} />
+  return (
+    <ApplicationSheet
+      application={application}
+      cvs={options.cvs}
+      coverLetters={options.coverLetters}
+    />
+  )
 }
