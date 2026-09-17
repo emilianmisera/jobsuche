@@ -34,7 +34,272 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      activities: {
+        Row: {
+          application_id: string
+          created_at: string
+          id: string
+          message: string
+          payload: Json
+          type: Database["public"]["Enums"]["activity_type"]
+          user_id: string
+        }
+        Insert: {
+          application_id: string
+          created_at?: string
+          id?: string
+          message: string
+          payload?: Json
+          type: Database["public"]["Enums"]["activity_type"]
+          user_id: string
+        }
+        Update: {
+          application_id?: string
+          created_at?: string
+          id?: string
+          message?: string
+          payload?: Json
+          type?: Database["public"]["Enums"]["activity_type"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activities_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      application_attachments: {
+        Row: {
+          application_id: string
+          created_at: string
+          document_id: string
+        }
+        Insert: {
+          application_id: string
+          created_at?: string
+          document_id: string
+        }
+        Update: {
+          application_id?: string
+          created_at?: string
+          document_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "application_attachments_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "application_attachments_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      applications: {
+        Row: {
+          applied_at: string | null
+          company: string
+          cover_letter_id: string | null
+          created_at: string
+          cv_document_id: string | null
+          employment_type: Database["public"]["Enums"]["employment_type"] | null
+          gmail_thread_id: string | null
+          id: string
+          is_remote: boolean
+          job_link: string | null
+          location: string | null
+          next_action_at: string | null
+          next_action_note: string | null
+          notes: string | null
+          position: string
+          status: Database["public"]["Enums"]["application_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          applied_at?: string | null
+          company: string
+          cover_letter_id?: string | null
+          created_at?: string
+          cv_document_id?: string | null
+          employment_type?:
+            | Database["public"]["Enums"]["employment_type"]
+            | null
+          gmail_thread_id?: string | null
+          id?: string
+          is_remote?: boolean
+          job_link?: string | null
+          location?: string | null
+          next_action_at?: string | null
+          next_action_note?: string | null
+          notes?: string | null
+          position: string
+          status?: Database["public"]["Enums"]["application_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          applied_at?: string | null
+          company?: string
+          cover_letter_id?: string | null
+          created_at?: string
+          cv_document_id?: string | null
+          employment_type?:
+            | Database["public"]["Enums"]["employment_type"]
+            | null
+          gmail_thread_id?: string | null
+          id?: string
+          is_remote?: boolean
+          job_link?: string | null
+          location?: string | null
+          next_action_at?: string | null
+          next_action_note?: string | null
+          notes?: string | null
+          position?: string
+          status?: Database["public"]["Enums"]["application_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "applications_cover_letter_id_fkey"
+            columns: ["cover_letter_id"]
+            isOneToOne: false
+            referencedRelation: "cover_letters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "applications_cv_document_id_fkey"
+            columns: ["cv_document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cover_letter_templates: {
+        Row: {
+          base_pdf_path: string
+          created_at: string
+          font_path: string | null
+          id: string
+          is_default: boolean
+          layout: Json
+          name: string
+          signature_pdf_path: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          base_pdf_path: string
+          created_at?: string
+          font_path?: string | null
+          id?: string
+          is_default?: boolean
+          layout?: Json
+          name: string
+          signature_pdf_path?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          base_pdf_path?: string
+          created_at?: string
+          font_path?: string | null
+          id?: string
+          is_default?: boolean
+          layout?: Json
+          name?: string
+          signature_pdf_path?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      cover_letters: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          template_id: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          body?: string
+          created_at?: string
+          id?: string
+          template_id: string
+          title: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          template_id?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cover_letters_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "cover_letter_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      documents: {
+        Row: {
+          created_at: string
+          id: string
+          mime_type: string
+          size_bytes: number | null
+          storage_path: string
+          title: string
+          type: Database["public"]["Enums"]["document_type"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          mime_type?: string
+          size_bytes?: number | null
+          storage_path: string
+          title: string
+          type?: Database["public"]["Enums"]["document_type"]
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          mime_type?: string
+          size_bytes?: number | null
+          storage_path?: string
+          title?: string
+          type?: Database["public"]["Enums"]["document_type"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -43,7 +308,15 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      activity_type: "created" | "status_changed" | "note" | "email_received"
+      application_status:
+        | "draft"
+        | "applied"
+        | "in_progress"
+        | "rejected"
+        | "offer"
+      document_type: "cv" | "attachment"
+      employment_type: "full_time" | "part_time" | "mini_job" | "fixed_term"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -173,7 +446,18 @@ export const Constants = {
     Enums: {},
   },
   public: {
-    Enums: {},
+    Enums: {
+      activity_type: ["created", "status_changed", "note", "email_received"],
+      application_status: [
+        "draft",
+        "applied",
+        "in_progress",
+        "rejected",
+        "offer",
+      ],
+      document_type: ["cv", "attachment"],
+      employment_type: ["full_time", "part_time", "mini_job", "fixed_term"],
+    },
   },
 } as const
 
