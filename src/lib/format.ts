@@ -47,3 +47,9 @@ export function formatFileList(titles: string[]): string {
 
   return `${titles.slice(0, 2).join(', ')}, + ${titles.length - 2} mehr`
 }
+
+/** Für die Timeline, etwa 09.10.2026 um 14:32. */
+export function formatDateTime(value: string): string {
+  const date = parseISO(value)
+  return isValid(date) ? format(date, "dd.MM.yyyy 'um' HH:mm") : '-'
+}

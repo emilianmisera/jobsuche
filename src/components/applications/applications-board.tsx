@@ -4,6 +4,9 @@ import { DragDropProvider, useDraggable, useDroppable } from '@dnd-kit/react'
 import { useOptimistic, useTransition } from 'react'
 import { toast } from 'sonner'
 
+import { useRouter } from 'next/navigation'
+import { useRef } from 'react'
+
 import { updateApplicationStatus } from '@/lib/applications/actions'
 import type { ApplicationListItem } from '@/lib/applications/queries'
 import { STATUS_CONFIG, STATUS_ORDER, type ApplicationStatus } from '@/lib/applications/status'
@@ -26,6 +29,9 @@ type CardProps = {
 }
 
 function BoardCard({ application }: CardProps) {
+  const router = useRouter()
+  const start = useRef<{ x: number; y: number } | null>(null)
+
   const { ref, isDragging } = useDraggable({
     id: application.id,
     type: 'application',
@@ -34,6 +40,19 @@ function BoardCard({ application }: CardProps) {
   return (
     <article
       ref={ref}
+      onPointerDown={(event) => {
+        start.current = { x: event.clientX, y: event.clientY }
+      }}
+      onClick={(event) => {
+        // Ein Drag endet auch mit einem Click. Ab 5px Bewegung war es kein Klick.
+        const from = start.current
+        if (!from) return
+
+        const moved = Math.hypot(event.clientX - from.x, event.clientY - from.y)
+        if (moved > 5) return
+
+        router.push(`/bewerbungen/${application.id}?view=board`)
+      }}
       className={cn(
         'cursor-grab rounded-xl border bg-background p-4 shadow-sm transition-opacity',
         isDragging && 'opacity-40',

@@ -60,3 +60,35 @@ export async function getFormOptions(): Promise<{
 
   return { cvs: cvs.data, coverLetters: coverLetters.data }
 }
+
+function applicationQuery(supabase: Awaited<ReturnType<typeof createClient>>, id: string) {
+  return supabase
+    .from('applications')
+    .select(
+      `
+      *,
+      cv:documents!applications_cv_document_id_fkey (id, title),
+      cover_letter:cover_letters!applications_cover_letter_id_fkey (id, title),
+      attachments:application_attachments (document:documents (id, title)),
+      activities (id, type, message, payload, created_at)
+    `,
+    )
+    .eq('id', id)
+    .order('created_at', { referencedTable: 'activities', ascending: false })
+    .single()
+}
+
+export type ApplicationDetail = QueryData<ReturnType<typeof applicationQuery>>
+
+export async function getApplication(id: string): Promise<ApplicationDetail | null> {
+  const supabase = await createClient()
+  const { data, error } = await applicationQuery(supabase, id)
+
+  // PGRST116 heißt "kein Treffer", das ist kein Fehler sondern ein 404
+  if (error) {
+    if (error.code === 'PGRST116') return null
+    throw new Error(`Bewerbung konnte nicht geladen werden: ${error.message}`)
+  }
+
+  return data
+}

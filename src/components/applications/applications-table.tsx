@@ -1,5 +1,6 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import {
   createColumnHelper,
   createSortedRowModel,
@@ -93,6 +94,7 @@ type ApplicationsTableProps = {
 }
 
 export function ApplicationsTable({ data }: ApplicationsTableProps) {
+  const router = useRouter()
   const [sorting, setSorting] = useState<SortingState>([])
 
   const table = useTable({
@@ -145,7 +147,11 @@ export function ApplicationsTable({ data }: ApplicationsTableProps) {
 
       <TableBody>
         {table.getRowModel().rows.map((row) => (
-          <TableRow key={row.id}>
+                    <TableRow
+            key={row.id}
+            onClick={() => router.push(`/bewerbungen/${row.id}`)}
+            className="cursor-pointer"
+          >
             {row.getAllCells().map((cell) => (
               <TableCell key={cell.id} className="py-4">
                 <table.FlexRender cell={cell} />
