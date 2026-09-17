@@ -40,3 +40,23 @@ export async function getApplications(): Promise<ApplicationListItem[]> {
 
   return data
 }
+
+export type DocumentOption = { id: string; title: string }
+
+export async function getFormOptions(): Promise<{
+  cvs: DocumentOption[]
+  coverLetters: DocumentOption[]
+}> {
+  const supabase = await createClient()
+
+  const [cvs, coverLetters] = await Promise.all([
+    supabase.from('documents').select('id, title').eq('type', 'cv').order('title'),
+    supabase.from('cover_letters').select('id, title').order('title'),
+  ])
+
+  if (cvs.error || coverLetters.error) {
+    throw new Error('Dokumente konnten nicht geladen werden.')
+  }
+
+  return { cvs: cvs.data, coverLetters: coverLetters.data }
+}

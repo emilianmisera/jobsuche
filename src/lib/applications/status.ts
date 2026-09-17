@@ -43,10 +43,10 @@ export const STATUS_CONFIG: Record<ApplicationStatus, StatusConfig> = {
 }
 
 /** Reihenfolge der Board-Spalten und der Sortierung. */
-export const STATUS_ORDER: ApplicationStatus[] = [
+export const STATUS_ORDER = [
   'draft',
   'applied',
   'in_progress',
   'rejected',
   'offer',
-]
+] as const satisfies readonly ApplicationStatus[]
