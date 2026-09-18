@@ -6,6 +6,7 @@ import { CvUpload } from '@/components/documents/cv-upload'
 import { DocumentCard } from '@/components/documents/document-card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import type { CoverLetterListItem, CvListItem } from '@/lib/documents/queries'
+import { NewCoverLetterButton } from '../cover-letters/new-cover-letter-button'
 
 /** Supabase liefert bei (count) ein Array mit einem Objekt. */
 function readCount(rows: { count: number }[]): number {
@@ -62,24 +63,20 @@ export function DocumentsViews({ cvs, coverLetters }: DocumentsViewsProps) {
         </div>
       </TabsContent>
 
-      <TabsContent value="anschreiben" className="mt-6">
-        {coverLetters.length === 0 ? (
-          <p className="py-16 text-center text-sm text-muted-foreground">
-            Noch keine Motivationsschreiben. Der Editor kommt als Nächstes.
-          </p>
-        ) : (
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(14rem,1fr))] gap-4">
-            {coverLetters.map((letter) => (
-              <DocumentCard
-                key={letter.id}
-                href={`/anschreiben/${letter.id}`}
-                title={letter.title}
-                usageCount={readCount(letter.used_in)}
-                updatedAt={letter.updated_at}
-              />
-            ))}
-          </div>
-        )}
+            <TabsContent value="anschreiben" className="mt-6">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(14rem,1fr))] gap-4">
+          {coverLetters.map((letter) => (
+            <DocumentCard
+              key={letter.id}
+              href={`/anschreiben/${letter.id}`}
+              title={letter.title}
+              usageCount={readCount(letter.used_in)}
+              updatedAt={letter.updated_at}
+            />
+          ))}
+
+          <NewCoverLetterButton />
+        </div>
       </TabsContent>
     </Tabs>
   )
