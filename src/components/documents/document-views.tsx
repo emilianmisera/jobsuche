@@ -2,11 +2,12 @@
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
+import { NewCoverLetterButton } from '@/components/cover-letters/new-cover-letter-button'
 import { CvUpload } from '@/components/documents/cv-upload'
 import { DocumentCard } from '@/components/documents/document-card'
+import { SearchInput } from '@/components/search-input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import type { CoverLetterListItem, CvListItem } from '@/lib/documents/queries'
-import { NewCoverLetterButton } from '../cover-letters/new-cover-letter-button'
 
 /** Supabase liefert bei (count) ein Array mit einem Objekt. */
 function readCount(rows: { count: number }[]): number {
@@ -16,9 +17,10 @@ function readCount(rows: { count: number }[]): number {
 type DocumentsViewsProps = {
   cvs: CvListItem[]
   coverLetters: CoverLetterListItem[]
+  query?: string
 }
 
-export function DocumentsViews({ cvs, coverLetters }: DocumentsViewsProps) {
+export function DocumentsViews({ cvs, coverLetters, query }: DocumentsViewsProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -36,8 +38,8 @@ export function DocumentsViews({ cvs, coverLetters }: DocumentsViewsProps) {
       params.delete('tab')
     }
 
-    const query = params.toString()
-    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false })
+    const search = params.toString()
+    router.replace(search ? `${pathname}?${search}` : pathname, { scroll: false })
   }
 
   return (
@@ -47,36 +49,50 @@ export function DocumentsViews({ cvs, coverLetters }: DocumentsViewsProps) {
         <TabsTrigger value="anschreiben">Motivationsschreiben</TabsTrigger>
       </TabsList>
 
-      <TabsContent value="lebenslauf" className="mt-6">
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(14rem,1fr))] gap-4">
-          {cvs.map((cv) => (
-            <DocumentCard
-              key={cv.id}
-              href={`/dokumente/${cv.id}`}
-              title={cv.title}
-              usageCount={readCount(cv.used_as_cv) + readCount(cv.used_as_attachment)}
-              updatedAt={cv.updated_at}
-            />
-          ))}
+      <SearchInput className="mt-6" />
 
-          <CvUpload />
-        </div>
+      <TabsContent value="lebenslauf" className="mt-6">
+        {cvs.length === 0 && query ? (
+          <p className="py-16 text-center text-sm text-muted-foreground">
+            Kein Lebenslauf passt zu &quot;{query}&quot;.
+          </p>
+        ) : (
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(14rem,1fr))] gap-4">
+            {cvs.map((cv) => (
+              <DocumentCard
+                key={cv.id}
+                href={`/dokumente/${cv.id}`}
+                title={cv.title}
+                usageCount={readCount(cv.used_as_cv) + readCount(cv.used_as_attachment)}
+                updatedAt={cv.updated_at}
+              />
+            ))}
+
+            <CvUpload />
+          </div>
+        )}
       </TabsContent>
 
-            <TabsContent value="anschreiben" className="mt-6">
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(14rem,1fr))] gap-4">
-          {coverLetters.map((letter) => (
-            <DocumentCard
-              key={letter.id}
-              href={`/anschreiben/${letter.id}`}
-              title={letter.title}
-              usageCount={readCount(letter.used_in)}
-              updatedAt={letter.updated_at}
-            />
-          ))}
+      <TabsContent value="anschreiben" className="mt-6">
+        {coverLetters.length === 0 && query ? (
+          <p className="py-16 text-center text-sm text-muted-foreground">
+            Kein Motivationsschreiben passt zu &quot;{query}&quot;.
+          </p>
+        ) : (
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(14rem,1fr))] gap-4">
+            {coverLetters.map((letter) => (
+              <DocumentCard
+                key={letter.id}
+                href={`/anschreiben/${letter.id}`}
+                title={letter.title}
+                usageCount={readCount(letter.used_in)}
+                updatedAt={letter.updated_at}
+              />
+            ))}
 
-          <NewCoverLetterButton />
-        </div>
+            <NewCoverLetterButton />
+          </div>
+        )}
       </TabsContent>
     </Tabs>
   )

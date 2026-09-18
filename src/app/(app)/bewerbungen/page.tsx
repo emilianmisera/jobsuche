@@ -1,20 +1,33 @@
 import { ApplicationsViews } from '@/components/applications/applications-views'
 import { NewApplicationButton } from '@/components/applications/new-application-button'
+import { SearchInput } from '@/components/search-input'
 import { getApplications, getFormOptions } from '@/lib/applications/queries'
 
-export default async function BewerbungenPage() {
-  const [applications, options] = await Promise.all([getApplications(), getFormOptions()])
+export default async function BewerbungenPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>
+}) {
+  const { q } = await searchParams
+
+  const [applications, options] = await Promise.all([getApplications(q), getFormOptions()])
 
   return (
-    <div className="m-2 flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl bg-background p-8">
-      <div className="flex shrink-0 items-center justify-between">
-        <h1 className="text-2xl font-bold tracking-tight">Bewerbungen</h1>
-        <NewApplicationButton cvs={options.cvs} coverLetters={options.coverLetters} />
+    <>
+      <div className="shrink-0 px-2 pt-2">
+        <SearchInput className="max-w-2xl" />
       </div>
 
-      <div className="mt-6 flex min-h-0 flex-1 flex-col">
-        <ApplicationsViews data={applications} />
+      <div className="m-2 flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl bg-background p-8">
+        <div className="flex shrink-0 items-center justify-between">
+          <h1 className="text-2xl font-bold tracking-tight">Bewerbungen</h1>
+          <NewApplicationButton cvs={options.cvs} coverLetters={options.coverLetters} />
+        </div>
+
+        <div className="mt-6 flex min-h-0 flex-1 flex-col">
+          <ApplicationsViews data={applications} query={q} />
+        </div>
       </div>
-    </div>
+    </>
   )
 }

@@ -9,16 +9,17 @@ import type { ApplicationListItem } from '@/lib/applications/queries'
 
 type ApplicationsViewsProps = {
   data: ApplicationListItem[]
+  query?: string
 }
 
-export function ApplicationsViews({ data }: ApplicationsViewsProps) {
+export function ApplicationsViews({ data, query }: ApplicationsViewsProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
   const view = searchParams.get('view') === 'board' ? 'board' : 'table'
 
-  function handleChange(next: string | null) {
+    function handleChange(next: string | null) {
     if (next === null) return
 
     const params = new URLSearchParams(searchParams)
@@ -29,8 +30,8 @@ export function ApplicationsViews({ data }: ApplicationsViewsProps) {
       params.delete('view')
     }
 
-    const query = params.toString()
-    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false })
+    const search = params.toString()
+    router.replace(search ? `${pathname}?${search}` : pathname, { scroll: false })
   }
 
   return (
@@ -40,8 +41,8 @@ export function ApplicationsViews({ data }: ApplicationsViewsProps) {
         <TabsTrigger value="board">Board</TabsTrigger>
       </TabsList>
 
-      <TabsContent value="table" className="mt-6 min-h-0 flex-1 overflow-y-auto">
-        <ApplicationsTable data={data} />
+    <TabsContent value="table" className="mt-6 min-h-0 flex-1 overflow-y-auto">
+        <ApplicationsTable data={data} query={query} />
       </TabsContent>
 
       <TabsContent value="board" className="mt-6 min-h-0 flex-1">

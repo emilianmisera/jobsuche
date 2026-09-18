@@ -2,10 +2,13 @@ import 'server-only'
 
 import type { QueryData } from '@supabase/supabase-js'
 
+import { sanitizeSearch } from '@/lib/search'
 import { createClient } from '@/lib/supabase/server'
 
-function applicationsQuery(supabase: Awaited<ReturnType<typeof createClient>>) {
-  return supabase
+type Supabase = Awaited<ReturnType<typeof createClient>>
+
+function applicationsQuery(supabase: Supabase, search?: string) {
+  let builder = supabase
     .from('applications')
     .select(
       `
@@ -26,13 +29,21 @@ function applicationsQuery(supabase: Awaited<ReturnType<typeof createClient>>) {
     `,
     )
     .order('created_at', { ascending: false })
+
+  const term = sanitizeSearch(search)
+
+  if (term) {
+    builder = builder.or(`company.ilike.%${term}%,position.ilike.%${term}%`)
+  }
+
+  return builder
 }
 
 export type ApplicationListItem = QueryData<ReturnType<typeof applicationsQuery>>[number]
 
-export async function getApplications(): Promise<ApplicationListItem[]> {
+export async function getApplications(search?: string): Promise<ApplicationListItem[]> {
   const supabase = await createClient()
-  const { data, error } = await applicationsQuery(supabase)
+  const { data, error } = await applicationsQuery(supabase, search)
 
   if (error) {
     throw new Error(`Bewerbungen konnten nicht geladen werden: ${error.message}`)
@@ -61,7 +72,7 @@ export async function getFormOptions(): Promise<{
   return { cvs: cvs.data, coverLetters: coverLetters.data }
 }
 
-function applicationQuery(supabase: Awaited<ReturnType<typeof createClient>>, id: string) {
+function applicationQuery(supabase: Supabase, id: string) {
   return supabase
     .from('applications')
     .select(

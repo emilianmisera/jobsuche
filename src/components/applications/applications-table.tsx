@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import {
   createColumnHelper,
   createSortedRowModel,
@@ -91,10 +91,12 @@ const columns = columnHelper.columns([
 
 type ApplicationsTableProps = {
   data: ApplicationListItem[]
+  query?: string
 }
 
-export function ApplicationsTable({ data }: ApplicationsTableProps) {
+export function ApplicationsTable({ data, query }: ApplicationsTableProps) {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [sorting, setSorting] = useState<SortingState>([])
 
   const table = useTable({
@@ -109,7 +111,9 @@ export function ApplicationsTable({ data }: ApplicationsTableProps) {
   if (data.length === 0) {
     return (
       <p className="py-16 text-center text-sm text-muted-foreground">
-        Noch keine Bewerbungen. Leg deine erste an.
+        {query
+          ? `Keine Bewerbung passt zu "${query}".`
+          : 'Noch keine Bewerbungen. Leg deine erste an.'}
       </p>
     )
   }
@@ -147,9 +151,12 @@ export function ApplicationsTable({ data }: ApplicationsTableProps) {
 
       <TableBody>
         {table.getRowModel().rows.map((row) => (
-                    <TableRow
+                              <TableRow
             key={row.id}
-            onClick={() => router.push(`/bewerbungen/${row.id}`)}
+            onClick={() => {
+              const params = searchParams.toString()
+              router.push(`/bewerbungen/${row.id}${params ? `?${params}` : ''}`)
+            }}
             className="cursor-pointer"
           >
             {row.getAllCells().map((cell) => (

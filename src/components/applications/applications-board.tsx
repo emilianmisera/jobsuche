@@ -13,6 +13,8 @@ import { STATUS_CONFIG, STATUS_ORDER, type ApplicationStatus } from '@/lib/appli
 import { formatDate, formatRelativeDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
+import { useSearchParams } from 'next/navigation'
+
 /** Zweite Zeile auf der Karte, abhängig vom Status. */
 function cardMeta(application: ApplicationListItem): string {
   if (application.status === 'draft') return '-'
@@ -30,6 +32,7 @@ type CardProps = {
 
 function BoardCard({ application }: CardProps) {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const start = useRef<{ x: number; y: number } | null>(null)
 
   const { ref, isDragging } = useDraggable({
@@ -51,7 +54,8 @@ function BoardCard({ application }: CardProps) {
         const moved = Math.hypot(event.clientX - from.x, event.clientY - from.y)
         if (moved > 5) return
 
-        router.push(`/bewerbungen/${application.id}?view=board`)
+        // Suche und Ansicht mitnehmen, sonst geht beim Schließen der Filter verloren
+        router.push(`/bewerbungen/${application.id}?${searchParams}`)
       }}
       className={cn(
         'cursor-grab rounded-xl border bg-background p-4 shadow-sm transition-opacity',
