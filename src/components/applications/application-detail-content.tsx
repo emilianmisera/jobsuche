@@ -22,15 +22,26 @@ type ApplicationDetailContentProps = {
 }
 
 export function ApplicationDetailContent({ application }: ApplicationDetailContentProps) {
-  const documents = [
-    application.cv ? { ...application.cv, kind: 'Lebenslauf' } : null,
+    const documents = [
+    application.cv
+      ? { ...application.cv, kind: 'Lebenslauf', href: `/dokumente/${application.cv.id}` }
+      : null,
     application.cover_letter
-      ? { ...application.cover_letter, kind: 'Motivationsschreiben' }
+      ? {
+          ...application.cover_letter,
+          kind: 'Motivationsschreiben',
+          // Anschreiben liegen in einer eigenen Tabelle und damit auf einer eigenen Route
+          href: `/anschreiben/${application.cover_letter.id}`,
+        }
       : null,
     ...application.attachments
       .map((entry) => entry.document)
       .filter((document) => document !== null)
-      .map((document) => ({ ...document, kind: 'Anhang' })),
+      .map((document) => ({
+        ...document,
+        kind: 'Anhang',
+        href: `/dokumente/${document.id}`,
+      })),
   ].filter((entry) => entry !== null)
 
   return (
@@ -83,8 +94,8 @@ export function ApplicationDetailContent({ application }: ApplicationDetailConte
           <ul className="mt-2 space-y-2">
             {documents.map((document) => (
               <li key={document.id}>
-                <Link
-                  href={`/dokumente/${document.id}`}
+                                <Link
+                  href={document.href}
                   className="flex items-center justify-between gap-3 rounded-lg border border-l-4 border-l-primary p-3 hover:bg-accent"
                 >
                   <span>
@@ -108,12 +119,19 @@ export function ApplicationDetailContent({ application }: ApplicationDetailConte
         </section>
       ) : null}
 
-      <section>
+            <section>
         <h3 className="font-semibold">Aktivität</h3>
-        <ol className="mt-3 space-y-4">
+
+        <ol className="mt-3">
           {application.activities.map((activity) => (
-            <li key={activity.id} className="flex gap-3">
-              <span aria-hidden className="mt-1.5 size-2 shrink-0 rounded-full bg-foreground" />
+            <li
+              key={activity.id}
+              className="relative flex gap-3 pb-5 last:pb-0 after:absolute after:top-4 after:bottom-0 after:left-[3px] after:w-px after:bg-border last:after:hidden"
+            >
+              <span
+                aria-hidden
+                className="relative z-10 mt-1.5 size-2 shrink-0 rounded-full bg-foreground ring-4 ring-background"
+              />
               <span>
                 <time className="block text-sm text-muted-foreground">
                   {formatDateTime(activity.created_at)}

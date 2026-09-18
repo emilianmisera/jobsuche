@@ -17,7 +17,7 @@ export function NewApplicationButton({ cvs, coverLetters }: NewApplicationButton
 
   return (
     <>
-      <Button onClick={() => setOpen(true)}>
+      <Button onClick={() => setOpen(true)} className="cursor-pointer">
         <Plus />
         Bewerbung hinzufügen
       </Button>

@@ -37,8 +37,12 @@ export function ApplicationsViews({ data, query }: ApplicationsViewsProps) {
   return (
     <Tabs value={view} onValueChange={handleChange} className="flex min-h-0 flex-1 flex-col">
       <TabsList className="shrink-0 self-start">
-        <TabsTrigger value="table">Tabelle</TabsTrigger>
-        <TabsTrigger value="board">Board</TabsTrigger>
+        <TabsTrigger value="table" className="cursor-pointer">
+          Tabelle
+        </TabsTrigger>
+        <TabsTrigger value="board" className="cursor-pointer">
+          Board
+        </TabsTrigger>
       </TabsList>
 
     <TabsContent value="table" className="mt-6 min-h-0 flex-1 overflow-y-auto">

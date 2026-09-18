@@ -59,7 +59,7 @@ export function ApplicationActions({
 
   return (
     <div className="flex items-center gap-1">
-      <Button variant="ghost" size="icon" aria-label="Bearbeiten" onClick={() => setEditOpen(true)}>
+      <Button variant="ghost" size="icon" aria-label="Bearbeiten" onClick={() => setEditOpen(true)} className="cursor-pointer">
         <Pencil />
       </Button>
 
@@ -67,7 +67,7 @@ export function ApplicationActions({
         variant="ghost"
         size="icon"
         aria-label="Löschen"
-        className="text-destructive hover:text-destructive"
+        className="text-destructive hover:text-destructive cursor-pointer"
         onClick={() => setDeleteOpen(true)}
       >
         <Trash2 />

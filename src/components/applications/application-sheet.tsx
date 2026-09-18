@@ -1,12 +1,13 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 import { ApplicationActions } from '@/components/applications/application-actions'
 import { ApplicationDetailContent } from '@/components/applications/application-detail-content'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
-import { toApplicationInput } from '@/lib/applications/schema'
 import type { ApplicationDetail, DocumentOption } from '@/lib/applications/queries'
+import { toApplicationInput } from '@/lib/applications/schema'
 
 type ApplicationSheetProps = {
   application: ApplicationDetail
@@ -16,9 +17,24 @@ type ApplicationSheetProps = {
 
 export function ApplicationSheet({ application, cvs, coverLetters }: ApplicationSheetProps) {
   const router = useRouter()
+  const [open, setOpen] = useState(false)
+
+  // Die Route mountet das Sheet schon geöffnet. Base UI animiert aber nur den
+  // Wechsel von geschlossen auf offen, deshalb erst im nächsten Frame öffnen.
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setOpen(true))
+    return () => cancelAnimationFrame(frame)
+  }, [])
 
   return (
-    <Sheet open onOpenChange={(open) => !open && router.back()}>
+    <Sheet
+      open={open}
+      onOpenChange={setOpen}
+      onOpenChangeComplete={(isOpen) => {
+        // Route erst verlassen, wenn die Schließ-Animation durch ist
+        if (!isOpen) router.back()
+      }}
+    >
       <SheetContent side="right" className="w-full overflow-y-auto sm:w-[34rem] sm:max-w-none">
         <SheetHeader className="sr-only">
           <SheetTitle>
@@ -26,7 +42,6 @@ export function ApplicationSheet({ application, cvs, coverLetters }: Application
           </SheetTitle>
         </SheetHeader>
 
-        {/* Auf Höhe des X-Buttons, rechts genug Platz für ihn lassen */}
         <div className="absolute top-3 right-14 z-10">
           <ApplicationActions
             id={application.id}

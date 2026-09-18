@@ -44,9 +44,13 @@ export function DocumentsViews({ cvs, coverLetters, query }: DocumentsViewsProps
 
   return (
     <Tabs value={tab} onValueChange={handleChange}>
-      <TabsList className="self-start">
-        <TabsTrigger value="lebenslauf">Lebenslauf</TabsTrigger>
-        <TabsTrigger value="anschreiben">Motivationsschreiben</TabsTrigger>
+      <TabsList className="self-start cursor-pointer">
+        <TabsTrigger value="lebenslauf" className="cursor-pointer">
+          Lebenslauf
+        </TabsTrigger>
+        <TabsTrigger value="anschreiben" className="cursor-pointer">
+          Motivationsschreiben
+        </TabsTrigger>
       </TabsList>
 
       <SearchInput className="mt-6" />

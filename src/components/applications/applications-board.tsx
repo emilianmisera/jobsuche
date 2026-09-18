@@ -41,11 +41,12 @@ function BoardCard({ application }: CardProps) {
   })
 
   return (
-    <article
+        <article
       ref={ref}
       onPointerDown={(event) => {
         start.current = { x: event.clientX, y: event.clientY }
       }}
+      onMouseEnter={() => router.prefetch(`/bewerbungen/${application.id}?${searchParams}`)}
       onClick={(event) => {
         // Ein Drag endet auch mit einem Click. Ab 5px Bewegung war es kein Klick.
         const from = start.current

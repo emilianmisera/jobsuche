@@ -39,7 +39,7 @@ export function NewCoverLetterButton() {
         type="button"
         onClick={() => setOpen(true)}
         className={cn(
-          'flex aspect-[3/4] flex-col items-center justify-center gap-3 rounded-xl border border-dashed p-6 text-center transition-colors',
+          'flex aspect-[3/4] flex-col cursor-pointer items-center justify-center gap-3 rounded-xl border border-dashed p-6 text-center transition-colors',
           'hover:border-foreground hover:bg-accent',
         )}
       >

@@ -99,6 +99,11 @@ export function ApplicationsTable({ data, query }: ApplicationsTableProps) {
   const searchParams = useSearchParams()
   const [sorting, setSorting] = useState<SortingState>([])
 
+  function detailHref(id: string) {
+    const params = searchParams.toString()
+    return `/bewerbungen/${id}${params ? `?${params}` : ''}`
+  }
+
   const table = useTable({
     features,
     columns,
@@ -151,12 +156,10 @@ export function ApplicationsTable({ data, query }: ApplicationsTableProps) {
 
       <TableBody>
         {table.getRowModel().rows.map((row) => (
-                              <TableRow
+                                        <TableRow
             key={row.id}
-            onClick={() => {
-              const params = searchParams.toString()
-              router.push(`/bewerbungen/${row.id}${params ? `?${params}` : ''}`)
-            }}
+            onMouseEnter={() => router.prefetch(detailHref(row.id))}
+            onClick={() => router.push(detailHref(row.id))}
             className="cursor-pointer"
           >
             {row.getAllCells().map((cell) => (
