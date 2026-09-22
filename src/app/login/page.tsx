@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useActionState, useEffect } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -11,6 +11,13 @@ const initialState: AuthState = { error: null }
 
 export default function LoginPage() {
   const [state, formAction, pending] = useActionState(signIn, initialState)
+
+  // Harte Navigation statt router.push, damit der Server mit frischen Cookies rendert
+  useEffect(() => {
+    if (state.success) window.location.assign('/bewerbungen')
+  }, [state.success])
+
+  const busy = pending || state.success === true
 
   return (
     <main className="flex min-h-svh items-center justify-center p-6">
@@ -27,7 +34,7 @@ export default function LoginPage() {
               type="email"
               autoComplete="email"
               required
-              disabled={pending}
+              disabled={busy}
             />
           </div>
 
@@ -39,7 +46,7 @@ export default function LoginPage() {
               type="password"
               autoComplete="current-password"
               required
-              disabled={pending}
+              disabled={busy}
             />
           </div>
 
@@ -49,8 +56,8 @@ export default function LoginPage() {
             </p>
           ) : null}
 
-          <Button type="submit" className="w-full" disabled={pending}>
-            {pending ? 'Wird geprüft …' : 'Anmelden'}
+          <Button type="submit" className="w-full" disabled={busy}>
+            {busy ? 'Wird angemeldet …' : 'Anmelden'}
           </Button>
         </form>
       </div>

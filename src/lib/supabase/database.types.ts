@@ -300,6 +300,98 @@ export type Database = {
         }
         Relationships: []
       }
+      email_accounts: {
+        Row: {
+          created_at: string
+          email: string
+          last_synced_at: string | null
+          refresh_token: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          last_synced_at?: string | null
+          refresh_token: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          last_synced_at?: string | null
+          refresh_token?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      email_messages: {
+        Row: {
+          application_id: string | null
+          confidence: number | null
+          created_at: string
+          from_address: string
+          gmail_message_id: string
+          gmail_thread_id: string | null
+          id: string
+          received_at: string
+          seen_at: string | null
+          snippet: string
+          state: Database["public"]["Enums"]["suggestion_state"]
+          subject: string
+          suggested_status:
+            | Database["public"]["Enums"]["application_status"]
+            | null
+          user_id: string
+        }
+        Insert: {
+          application_id?: string | null
+          confidence?: number | null
+          created_at?: string
+          from_address: string
+          gmail_message_id: string
+          gmail_thread_id?: string | null
+          id?: string
+          received_at: string
+          seen_at?: string | null
+          snippet?: string
+          state?: Database["public"]["Enums"]["suggestion_state"]
+          subject?: string
+          suggested_status?:
+            | Database["public"]["Enums"]["application_status"]
+            | null
+          user_id: string
+        }
+        Update: {
+          application_id?: string | null
+          confidence?: number | null
+          created_at?: string
+          from_address?: string
+          gmail_message_id?: string
+          gmail_thread_id?: string | null
+          id?: string
+          received_at?: string
+          seen_at?: string | null
+          snippet?: string
+          state?: Database["public"]["Enums"]["suggestion_state"]
+          subject?: string
+          suggested_status?:
+            | Database["public"]["Enums"]["application_status"]
+            | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_messages_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -317,6 +409,12 @@ export type Database = {
         | "offer"
       document_type: "cv" | "attachment"
       employment_type: "full_time" | "part_time" | "mini_job" | "fixed_term"
+      suggestion_state:
+        | "none"
+        | "pending"
+        | "accepted"
+        | "dismissed"
+        | "auto_applied"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -457,6 +555,13 @@ export const Constants = {
       ],
       document_type: ["cv", "attachment"],
       employment_type: ["full_time", "part_time", "mini_job", "fixed_term"],
+      suggestion_state: [
+        "none",
+        "pending",
+        "accepted",
+        "dismissed",
+        "auto_applied",
+      ],
     },
   },
 } as const

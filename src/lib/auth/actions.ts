@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation'
 
 import { createClient } from '@/lib/supabase/server'
 
-export type AuthState = { error: string | null }
+export type AuthState = { error: string | null; success?: boolean }
 
 export async function signIn(_prev: AuthState, formData: FormData): Promise<AuthState> {
   const email = String(formData.get('email') ?? '').trim()
@@ -22,8 +22,9 @@ export async function signIn(_prev: AuthState, formData: FormData): Promise<Auth
     return { error: 'E-Mail oder Passwort ist falsch.' }
   }
 
-  revalidatePath('/', 'layout')
-  redirect('/bewerbungen')
+  // Kein redirect hier. Der würde die Zielseite in derselben Antwort rendern,
+  // bevor alle Clients die neuen Session-Cookies sehen.
+  return { error: null, success: true }
 }
 
 export async function signOut() {

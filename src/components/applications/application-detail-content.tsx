@@ -2,9 +2,10 @@ import { ExternalLink } from 'lucide-react'
 import Link from 'next/link'
 
 import { StatusBadge } from '@/components/applications/status-badge'
-import type { ApplicationDetail } from '@/lib/applications/queries'
 import { STATUS_CONFIG, type ApplicationStatus } from '@/lib/applications/status'
 import { formatDate, formatDateTime, formatEmploymentType } from '@/lib/format'
+import { ApplicationSuggestions } from '@/components/applications/application-suggestions'
+import type { ApplicationDetail, Suggestion } from '@/lib/applications/queries'
 
 type ActivityPayload = { from?: ApplicationStatus; to?: ApplicationStatus }
 
@@ -19,9 +20,15 @@ function activityText(type: string, message: string, payload: unknown): string {
 
 type ApplicationDetailContentProps = {
   application: ApplicationDetail
+  suggestions: Suggestion[]
+  hasUnseen: boolean
 }
 
-export function ApplicationDetailContent({ application }: ApplicationDetailContentProps) {
+export function ApplicationDetailContent({
+  application,
+  suggestions,
+  hasUnseen,
+}: ApplicationDetailContentProps) {
     const documents = [
     application.cv
       ? { ...application.cv, kind: 'Lebenslauf', href: `/dokumente/${application.cv.id}` }
@@ -46,13 +53,19 @@ export function ApplicationDetailContent({ application }: ApplicationDetailConte
 
   return (
     <div className="space-y-6">
-      <div>
+            <div>
         <h2 className="text-2xl font-bold tracking-tight">{application.company}</h2>
         <p className="mt-1 text-lg text-muted-foreground">{application.position}</p>
         <div className="mt-3">
           <StatusBadge status={application.status} />
         </div>
       </div>
+
+      <ApplicationSuggestions
+        applicationId={application.id}
+        suggestions={suggestions}
+        hasUnseen={hasUnseen}
+      />
 
       <dl className="grid grid-cols-2 gap-x-6 gap-y-4">
         <Detail label="Ort">

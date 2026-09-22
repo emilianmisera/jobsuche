@@ -6,16 +6,24 @@ import { useEffect, useState } from 'react'
 import { ApplicationActions } from '@/components/applications/application-actions'
 import { ApplicationDetailContent } from '@/components/applications/application-detail-content'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
-import type { ApplicationDetail, DocumentOption } from '@/lib/applications/queries'
+import type { ApplicationDetail, DocumentOption, Suggestion } from '@/lib/applications/queries'
 import { toApplicationInput } from '@/lib/applications/schema'
 
 type ApplicationSheetProps = {
   application: ApplicationDetail
   cvs: DocumentOption[]
   coverLetters: DocumentOption[]
+  suggestions: Suggestion[]
+  hasUnseen: boolean
 }
 
-export function ApplicationSheet({ application, cvs, coverLetters }: ApplicationSheetProps) {
+export function ApplicationSheet({
+  application,
+  cvs,
+  coverLetters,
+  suggestions,
+  hasUnseen,
+}: ApplicationSheetProps) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
 
@@ -53,7 +61,11 @@ export function ApplicationSheet({ application, cvs, coverLetters }: Application
         </div>
 
         <div className="p-6 pt-16">
-          <ApplicationDetailContent application={application} />
+          <ApplicationDetailContent
+            application={application}
+            suggestions={suggestions}
+            hasUnseen={hasUnseen}
+          />
         </div>
       </SheetContent>
     </Sheet>

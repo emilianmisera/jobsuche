@@ -31,6 +31,8 @@ import {
   formatFileList,
   formatRelativeDate,
 } from '@/lib/format'
+import { UpdateIndicator } from './update-indicator'
+import { cn } from '@/lib/utils'
 
 const features = tableFeatures({
   rowSortingFeature,
@@ -46,6 +48,12 @@ const features = tableFeatures({
 const columnHelper = createColumnHelper<typeof features, ApplicationListItem>()
 
 const columns = columnHelper.columns([
+    columnHelper.accessor('has_update', {
+    id: 'update',
+    header: () => <span className="sr-only">Neu</span>,
+    enableSorting: false,
+    cell: (info) => (info.getValue() ? <UpdateIndicator /> : null),
+  }),
   columnHelper.accessor('company', {
     header: 'Unternehmen',
   }),
@@ -132,7 +140,10 @@ export function ApplicationsTable({ data, query }: ApplicationsTableProps) {
               const sorted = header.column.getIsSorted()
 
               return (
-                <TableHead key={header.id} className="text-muted-foreground">
+                                <TableHead
+                  key={header.id}
+                  className={cn('text-muted-foreground', header.column.id === 'update' && 'w-8 pr-0')}
+                >
                   {header.column.getCanSort() ? (
                     <button
                       type="button"
@@ -163,7 +174,10 @@ export function ApplicationsTable({ data, query }: ApplicationsTableProps) {
             className="cursor-pointer"
           >
             {row.getAllCells().map((cell) => (
-              <TableCell key={cell.id} className="py-4">
+                            <TableCell
+                key={cell.id}
+                className={cn('py-4', cell.column.id === 'update' && 'w-8 pr-0')}
+              >
                 <table.FlexRender cell={cell} />
               </TableCell>
             ))}

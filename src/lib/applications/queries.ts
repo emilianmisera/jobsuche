@@ -4,6 +4,7 @@ import type { QueryData } from '@supabase/supabase-js'
 
 import { sanitizeSearch } from '@/lib/search'
 import { createClient } from '@/lib/supabase/server'
+import type { ApplicationStatus } from '@/lib/applications/status'
 
 type Supabase = Awaited<ReturnType<typeof createClient>>
 
@@ -39,17 +40,30 @@ function applicationsQuery(supabase: Supabase, search?: string) {
   return builder
 }
 
-export type ApplicationListItem = QueryData<ReturnType<typeof applicationsQuery>>[number]
+type ApplicationRow = QueryData<ReturnType<typeof applicationsQuery>>[number]
+
+/** has_update heißt: offener Vorschlag oder ungesehene automatische Änderung. */
+export type ApplicationListItem = ApplicationRow & { has_update: boolean }
 
 export async function getApplications(search?: string): Promise<ApplicationListItem[]> {
   const supabase = await createClient()
-  const { data, error } = await applicationsQuery(supabase, search)
+
+  const [{ data, error }, updates] = await Promise.all([
+    applicationsQuery(supabase, search),
+    supabase
+      .from('email_messages')
+      .select('application_id')
+      .not('application_id', 'is', null)
+      .or('state.eq.pending,and(state.eq.auto_applied,seen_at.is.null)'),
+  ])
 
   if (error) {
     throw new Error(`Bewerbungen konnten nicht geladen werden: ${error.message}`)
   }
 
-  return data
+  const updated = new Set((updates.data ?? []).map((row) => row.application_id))
+
+  return data.map((row) => ({ ...row, has_update: updated.has(row.id) }))
 }
 
 export type DocumentOption = { id: string; title: string }
@@ -102,4 +116,43 @@ export async function getApplication(id: string): Promise<ApplicationDetail | nu
   }
 
   return data
+}
+
+export type Suggestion = {
+  id: string
+  subject: string
+  suggested_status: ApplicationStatus
+  confidence: number | null
+  received_at: string
+}
+
+export async function getApplicationUpdates(
+  applicationId: string,
+): Promise<{ suggestions: Suggestion[]; hasUnseen: boolean }> {
+  const supabase = await createClient()
+
+  const { data } = await supabase
+    .from('email_messages')
+    .select('id, subject, suggested_status, confidence, received_at, state')
+    .eq('application_id', applicationId)
+    .or('state.eq.pending,and(state.eq.auto_applied,seen_at.is.null)')
+    .order('received_at', { ascending: false })
+
+  const rows = data ?? []
+
+  const suggestions = rows.flatMap((row) =>
+    row.state === 'pending' && row.suggested_status
+      ? [
+          {
+            id: row.id,
+            subject: row.subject,
+            suggested_status: row.suggested_status,
+            confidence: row.confidence,
+            received_at: row.received_at,
+          },
+        ]
+      : [],
+  )
+
+  return { suggestions, hasUnseen: rows.some((row) => row.state === 'auto_applied') }
 }

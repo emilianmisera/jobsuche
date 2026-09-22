@@ -14,6 +14,7 @@ import { formatDate, formatRelativeDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
 import { useSearchParams } from 'next/navigation'
+import { UpdateIndicator } from './update-indicator'
 
 /** Zweite Zeile auf der Karte, abhängig vom Status. */
 function cardMeta(application: ApplicationListItem): string {
@@ -58,12 +59,14 @@ function BoardCard({ application }: CardProps) {
         // Suche und Ansicht mitnehmen, sonst geht beim Schließen der Filter verloren
         router.push(`/bewerbungen/${application.id}?${searchParams}`)
       }}
-      className={cn(
-        'cursor-grab rounded-xl border bg-background p-4 shadow-sm transition-opacity',
+            className={cn(
+        'relative cursor-grab rounded-xl border bg-background p-4 shadow-sm transition-opacity',
         isDragging && 'opacity-40',
       )}
     >
-      <h3 className="font-semibold">{application.company}</h3>
+      {application.has_update ? <UpdateIndicator className="absolute top-3 right-3" /> : null}
+
+      <h3 className="pr-6 font-semibold">{application.company}</h3>
       <p className="mt-1 text-sm text-muted-foreground">{application.position}</p>
       <p className="mt-2 text-sm text-muted-foreground">{cardMeta(application)}</p>
     </article>
