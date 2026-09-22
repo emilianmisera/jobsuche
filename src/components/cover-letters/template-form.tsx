@@ -47,7 +47,7 @@ function FilePicker({ label, hint, accept, required, file, onChange }: FilePicke
       />
 
       <div className="flex items-center gap-3">
-        <Button type="button" variant="outline" onClick={() => inputRef.current?.click()}>
+        <Button type="button" variant="outline" onClick={() => inputRef.current?.click()} className="cursor-pointer">
           <Upload />
           Datei wählen
         </Button>
@@ -160,7 +160,7 @@ export function TemplateForm() {
         onChange={setFont}
       />
 
-      <Button onClick={handleSubmit} disabled={pending || !base}>
+      <Button onClick={handleSubmit} disabled={pending || !base} className="cursor-pointer">
         {pending ? 'Lädt hoch …' : 'Vorlage speichern'}
       </Button>
     </div>

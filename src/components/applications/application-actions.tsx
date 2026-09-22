@@ -99,6 +99,7 @@ export function ApplicationActions({
                 event.preventDefault()
                 handleDelete()
               }}
+              className="cursor-pointer"
             >
               {pending ? 'Löscht …' : 'Löschen'}
             </AlertDialogAction>

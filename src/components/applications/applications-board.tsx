@@ -4,7 +4,7 @@ import { DragDropProvider, useDraggable, useDroppable } from '@dnd-kit/react'
 import { useOptimistic, useTransition } from 'react'
 import { toast } from 'sonner'
 
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useRef } from 'react'
 
 import { updateApplicationStatus } from '@/lib/applications/actions'
@@ -13,7 +13,6 @@ import { STATUS_CONFIG, STATUS_ORDER, type ApplicationStatus } from '@/lib/appli
 import { formatDate, formatRelativeDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
-import { useSearchParams } from 'next/navigation'
 import { UpdateIndicator } from './update-indicator'
 
 /** Zweite Zeile auf der Karte, abhängig vom Status. */
@@ -33,8 +32,13 @@ type CardProps = {
 
 function BoardCard({ application }: CardProps) {
   const router = useRouter()
+  const pathname = usePathname()
   const searchParams = useSearchParams()
   const start = useRef<{ x: number; y: number } | null>(null)
+
+  const params = new URLSearchParams(searchParams)
+  params.set('id', application.id)
+  const href = `${pathname}?${params}`
 
   const { ref, isDragging } = useDraggable({
     id: application.id,
@@ -47,17 +51,15 @@ function BoardCard({ application }: CardProps) {
       onPointerDown={(event) => {
         start.current = { x: event.clientX, y: event.clientY }
       }}
-      onMouseEnter={() => router.prefetch(`/bewerbungen/${application.id}?${searchParams}`)}
+            onMouseEnter={() => router.prefetch(href)}
       onClick={(event) => {
-        // Ein Drag endet auch mit einem Click. Ab 5px Bewegung war es kein Klick.
         const from = start.current
         if (!from) return
 
         const moved = Math.hypot(event.clientX - from.x, event.clientY - from.y)
         if (moved > 5) return
 
-        // Suche und Ansicht mitnehmen, sonst geht beim Schließen der Filter verloren
-        router.push(`/bewerbungen/${application.id}?${searchParams}`)
+        router.push(href, { scroll: false })
       }}
             className={cn(
         'relative cursor-grab rounded-xl border bg-background p-4 shadow-sm transition-opacity',

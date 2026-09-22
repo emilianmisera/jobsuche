@@ -78,6 +78,7 @@ export function DocumentActions({ id, title, usageCount }: DocumentActionsProps)
           setValue(title)
           setRenameOpen(true)
         }}
+        className="cursor-pointer"
       >
         <Pencil />
       </Button>
@@ -86,7 +87,7 @@ export function DocumentActions({ id, title, usageCount }: DocumentActionsProps)
         variant="outline"
         size="icon"
         aria-label="Löschen"
-        className="text-destructive hover:text-destructive"
+        className="text-destructive hover:text-destructive cursor-pointer"
         onClick={() => setDeleteOpen(true)}
       >
         <Trash2 />
@@ -138,6 +139,7 @@ export function DocumentActions({ id, title, usageCount }: DocumentActionsProps)
                 event.preventDefault()
                 handleDelete()
               }}
+              className="cursor-pointer"
             >
               {pending ? 'Löscht …' : 'Löschen'}
             </AlertDialogAction>

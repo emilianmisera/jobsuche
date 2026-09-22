@@ -56,7 +56,7 @@ export function GmailConnection({ account }: GmailConnectionProps) {
       </div>
 
            <div className="flex shrink-0 gap-2">
-        <Button onClick={handleSync} disabled={pending}>
+        <Button onClick={handleSync} disabled={pending} className="cursor-pointer">
           {pending ? 'Prüft …' : 'Jetzt prüfen'}
         </Button>
 
@@ -75,6 +75,7 @@ export function GmailConnection({ account }: GmailConnectionProps) {
               toast.success('Verbindung getrennt.')
             })
           }
+          className="cursor-pointer"
         >
           Trennen
         </Button>

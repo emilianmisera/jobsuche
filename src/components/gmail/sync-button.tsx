@@ -44,6 +44,7 @@ export function SyncButton() {
       disabled={pending}
       aria-label="Postfach prüfen"
       title="Postfach prüfen"
+      className="cursor-pointer"
     >
       <RefreshCw className={cn(pending && 'animate-spin')} />
     </Button>

@@ -245,14 +245,14 @@ export function ApplicationDialog({
 
         <div className="mt-2 flex items-center justify-between">
           <div className="flex gap-3">
-            <Button variant="secondary" disabled={step === 1} onClick={() => setStep(1)}>
+            <Button variant="secondary" disabled={step === 1} onClick={() => setStep(1)} className="cursor-pointer">
               Zurück
             </Button>
 
                         {step === 1 ? (
-              <Button onClick={() => setStep(2)}>Weiter</Button>
+              <Button onClick={() => setStep(2)} className="cursor-pointer">Weiter</Button>
             ) : (
-              <Button onClick={handleSubmit} disabled={pending}>
+              <Button onClick={handleSubmit} disabled={pending} className="cursor-pointer">
                 {pending ? 'Speichert …' : application ? 'Speichern' : 'Anlegen'}
               </Button>
             )}

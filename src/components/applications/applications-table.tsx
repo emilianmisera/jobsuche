@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter, useSearchParams } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import {
   createColumnHelper,
   createSortedRowModel,
@@ -104,12 +104,14 @@ type ApplicationsTableProps = {
 
 export function ApplicationsTable({ data, query }: ApplicationsTableProps) {
   const router = useRouter()
+  const pathname = usePathname()
   const searchParams = useSearchParams()
   const [sorting, setSorting] = useState<SortingState>([])
 
   function detailHref(id: string) {
-    const params = searchParams.toString()
-    return `/bewerbungen/${id}${params ? `?${params}` : ''}`
+    const params = new URLSearchParams(searchParams)
+    params.set('id', id)
+    return `${pathname}?${params}`
   }
 
   const table = useTable({
@@ -167,10 +169,10 @@ export function ApplicationsTable({ data, query }: ApplicationsTableProps) {
 
       <TableBody>
         {table.getRowModel().rows.map((row) => (
-                                        <TableRow
+                                                  <TableRow
             key={row.id}
             onMouseEnter={() => router.prefetch(detailHref(row.id))}
-            onClick={() => router.push(detailHref(row.id))}
+            onClick={() => router.push(detailHref(row.id), { scroll: false })}
             className="cursor-pointer"
           >
             {row.getAllCells().map((cell) => (
