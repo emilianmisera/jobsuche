@@ -16,7 +16,9 @@ import { buildQuery, matchMessage, type Candidate, type MatchStrength } from '@/
 import { getAccessToken } from '@/lib/gmail/oauth'
 import type { Database } from '@/lib/supabase/database.types'
 
-type Supabase = SupabaseClient<Database>
+// Session-Client und Admin-Client haben leicht verschiedene Typen,
+// die Abfragen hier sind für beide identisch.
+type Supabase = SupabaseClient<Database, 'public', any>
 
 export type SyncResult = { checked: number; matched: number; applied: number; pending: number }
 
@@ -67,16 +69,21 @@ export async function runGmailSync(supabase: Supabase, userId: string): Promise<
     .eq('user_id', userId)
     .maybeSingle()
 
-  if (accountError) throw new Error(`Gmail-Konto konnte nicht geladen werden: ${accountError.message}`)
+  if (accountError) {
+    throw new Error(`Gmail-Konto konnte nicht geladen werden: ${accountError.message}`)
+  }
+
   if (!account) throw new Error('Kein Gmail-Konto verbunden.')
 
   const token = await getAccessToken(account.refresh_token)
 
   if (!token) throw new Error('Die Gmail-Verbindung ist abgelaufen. Bitte neu verbinden.')
 
+  // Der Admin-Client im Cron umgeht RLS, deshalb überall explizit auf den User filtern
   const { data: applications, error: applicationsError } = await supabase
     .from('applications')
     .select('id, company, status, gmail_thread_id')
+    .eq('user_id', userId)
     .neq('status', 'draft')
     .order('applied_at', { ascending: false, nullsFirst: false })
 
@@ -87,7 +94,6 @@ export async function runGmailSync(supabase: Supabase, userId: string): Promise<
   const candidates: Candidate[] = applications ?? []
 
   if (candidates.length === 0) {
-    console.log('[gmail-sync] keine Bewerbungen ausser Drafts, nichts zu tun')
     await markSynced(supabase, userId, startedAt)
     return result
   }
@@ -96,6 +102,7 @@ export async function runGmailSync(supabase: Supabase, userId: string): Promise<
   const { data: threads } = await supabase
     .from('email_messages')
     .select('gmail_thread_id, application_id')
+    .eq('user_id', userId)
     .not('application_id', 'is', null)
     .not('gmail_thread_id', 'is', null)
 
@@ -116,31 +123,19 @@ export async function runGmailSync(supabase: Supabase, userId: string): Promise<
     ? new Date(account.last_synced_at).getTime() - DAY_MS
     : Date.now() - FIRST_SYNC_DAYS * DAY_MS
 
-  const query = buildQuery(candidates, Math.floor(since / 1000))
-  const ids = await listMessageIds(token, query)
+  const ids = await listMessageIds(token, buildQuery(candidates, Math.floor(since / 1000)))
 
   const { data: processed } = await supabase
     .from('email_messages')
     .select('gmail_message_id')
+    .eq('user_id', userId)
     .in('gmail_message_id', ids.length > 0 ? ids : [''])
 
   const seen = new Set((processed ?? []).map((row) => row.gmail_message_id))
-  const fresh = ids.filter((id) => !seen.has(id))
-
-  // Vorübergehend zur Fehlersuche, später entfernen
-  console.log('[gmail-sync]', {
-    candidates: candidates.map((candidate) => `${candidate.company} (${candidate.status})`),
-    since: new Date(since).toISOString(),
-    query,
-    found: ids.length,
-    alreadyProcessed: seen.size,
-    fresh: fresh.length,
-  })
-
   const classifier = getClassifier()
 
   // Gmail liefert neueste zuerst, für eine sinnvolle Timeline älteste zuerst verarbeiten
-  for (const id of fresh.reverse()) {
+  for (const id of ids.filter((entry) => !seen.has(entry)).reverse()) {
     result.checked += 1
 
     const meta = await getMetadata(token, id)
@@ -159,12 +154,6 @@ export async function runGmailSync(supabase: Supabase, userId: string): Promise<
       candidates,
       knownThreads,
     )
-
-    console.log('[gmail-sync] mail', {
-      from: from.address,
-      subject,
-      match: match ? `${match.candidate.company} via ${match.strength}` : null,
-    })
 
     if (!match) {
       // Nur merken, dass sie verarbeitet wurde. Kein Inhalt, kein Snippet.
@@ -186,8 +175,6 @@ export async function runGmailSync(supabase: Supabase, userId: string): Promise<
     const classification = await classifier
       .classify(redact(subject, extractText(full)), candidate.company)
       .catch(() => null)
-
-    console.log('[gmail-sync] klassifiziert', classification)
 
     const suggested = classification ? CATEGORY_STATUS[classification.category] : null
     const confidence = classification?.confidence ?? 0
@@ -227,13 +214,18 @@ export async function runGmailSync(supabase: Supabase, userId: string): Promise<
         .from('applications')
         .update({ gmail_thread_id: meta.threadId })
         .eq('id', candidate.id)
+        .eq('user_id', userId)
 
       candidate.gmail_thread_id = meta.threadId
     }
 
     if (state === 'auto_applied' && suggested) {
       // Der Trigger schreibt den Statuswechsel selbst in die Timeline
-      await supabase.from('applications').update({ status: suggested }).eq('id', candidate.id)
+      await supabase
+        .from('applications')
+        .update({ status: suggested })
+        .eq('id', candidate.id)
+        .eq('user_id', userId)
 
       candidate.status = suggested
       result.applied += 1
