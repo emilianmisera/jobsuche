@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>README.md</title>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+    
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+html,footer,header{
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Custom MD PDF CSS
+ */
+html,footer,header{
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+
+ }
+body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+<link rel="stylesheet" href="file:///Users/emilianmisera/Desktop/Code/jobsuche/R%3A%5C2.Travail%5C1.Enseignement%5CCours%5C_1.Outils%5C2.Developpement%5C1.SCSS%5Cmain.css" type="text/css"><link rel="stylesheet" href="file:///Users/emilianmisera/Desktop/Code/jobsuche/D%3A%5Crdaros%5CCours%5C_1.Outils%5C2.Developpement%5C1.SCSS%5Cmain.css" type="text/css">
+</head>
+
+<body>
+    <h1 id="jobsuche">Jobsuche</h1>
+<p>A tool I built to manage my own job applications. Before this everything lived in a spreadsheet plus a folder full of PDFs, which got messy fast.</p>
+<p>Now applications, CVs, cover letters and the email thread all sit in one place, and replies from companies get matched to the right application automatically.</p>
+<h2 id="features">Features</h2>
+<h3 id="applications">Applications</h3>
+<ul>
+<li>Table view with sorting, or a Kanban board with drag and drop between status columns</li>
+<li>Five statuses: draft, applied, in progress, rejected, offer</li>
+<li>Detail panel with documents, notes, next action and a full activity timeline</li>
+<li>Search across company and position</li>
+<li>Every status change gets logged to the timeline by a database trigger, no matter where it came from</li>
+</ul>
+<h3 id="documents">Documents</h3>
+<ul>
+<li>Upload CVs as PDF and preview them right in the app, files live in a private Storage bucket</li>
+<li>Cover letters are written in the app and rendered to PDF on the server, using my Figma layout as the base file</li>
+<li>The custom font gets embedded, and the signature moves up or down depending on how long the text is</li>
+<li>Text position and font size can be adjusted in the app with a live preview</li>
+</ul>
+<h3 id="gmail-sync">Gmail sync</h3>
+<p>This is the part I spent the most time on.</p>
+<ul>
+<li>Connect a Gmail account via OAuth, read-only</li>
+<li>The sync searches only for companies I actually applied to, plus known ATS domains like Personio, Greenhouse or Lever</li>
+<li>Matching happens in three stages with decreasing confidence: known thread from an earlier run, sender domain against the normalised company name, then company name in the text combined with a job-related keyword</li>
+<li>An LLM reads a shortened, redacted snippet and decides whether it's a rejection, an interview invite, an offer, a plain acknowledgment or something unrelated</li>
+<li>Every matched email shows up in that application's timeline</li>
+<li><strong>Automatic status change</strong> when the match is strong (thread or domain) and the model is at least 85% confident. Otherwise it becomes a suggestion with an accept and a dismiss button in the detail panel</li>
+<li>Status only ever moves forward, except rejections which can always be set. An acknowledgment can't undo a rejection</li>
+<li>A blue dot in the table and on the board card marks applications with something new. It disappears once you've looked, unless there's still a suggestion waiting</li>
+<li>Runs daily via cron, or on demand with the refresh button next to &quot;add application&quot;</li>
+</ul>
+<h2 id="stack">Stack</h2>
+<p>Next.js 16 with TypeScript, Tailwind 4 and shadcn/ui on Base UI. Supabase for database, auth and file storage. TanStack Table for the table, dnd-kit for the board, pdf-lib for the cover letters. Email classification runs on Groq. Deployed on Vercel.</p>
+<h2 id="some-decisions">Some decisions</h2>
+<p><strong>The LLM never sees my inbox.</strong> The Gmail query is scoped to companies I applied to. Message bodies are only fetched for emails that already matched an application. Of that, 600 characters go to the model, with links, addresses, phone numbers, signatures and quoted history stripped out first. Only sender, subject and a short preview get stored, never full bodies or attachments.</p>
+<p>The classifier sits behind an interface with two implementations. One env variable switches between Groq and a local model through Ollama.</p>
+<p><strong>Suggestions instead of blind automation.</strong> A wrong status would be worse than no status, because the trigger writes it into the timeline too. So automation needs both a strong match and high confidence. Everything else waits for me.</p>
+<p><strong>pdf-lib instead of JSX-to-PDF.</strong> The cover letter layout already existed in Figma. Exporting it as a base PDF and stamping the text in keeps it exact. Rebuilding it in a JSX library would only have looked similar. The text box coordinates live as JSON on the template.</p>
+<p><strong>RLS instead of filtering in code.</strong> No query filters by user id, Row Level Security handles it throughout. Forgetting a filter would be a leak, forgetting a policy is just an empty result. The cron job is the exception, it runs without a session and filters explicitly.</p>
+<p><strong>The detail panel is a query parameter.</strong> I first built it as an intercepting route. It broke whenever something revalidated while the panel was open, Next would render the full page instead of the panel. With <code>?id=...</code> the list never gets unmounted and nothing can fall apart.</p>
+<h2 id="running-it-locally">Running it locally</h2>
+<p>Needs Node 24 and Docker.</p>
+<pre class="hljs"><code><div>npm install
+npm run db:start
+npm run db:types
+npm run dev
+</div></code></pre>
+<p>Create <code>.env.local</code> from <code>.env.example</code>, the Supabase values come from <code>npx supabase status</code>.</p>
+<p>Local login: <code>dev@local.test</code> with <code>devpassword</code>.</p>
+<p>The Gmail sync additionally needs a Google Cloud project with the Gmail API enabled and a Groq key. Everything else works fine without them.</p>
+<h2 id="note">Note</h2>
+<p>Built for a single user, signups are disabled. Gmail access is read-only and limited to messages matching an application. Details at <code>/datenschutz</code>.</p>
+
+</body>
+
+</html>
