@@ -60,6 +60,11 @@ export default function LoginPage() {
             {busy ? 'Wird angemeldet …' : 'Anmelden'}
           </Button>
         </form>
+                <p className="mt-6 text-center text-sm text-muted-foreground">
+          <a href="/datenschutz" className="underline underline-offset-4 hover:text-foreground">
+            Datenschutz
+          </a>
+        </p>
       </div>
     </main>
   )

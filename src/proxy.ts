@@ -1,6 +1,9 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
+/** Ohne Login erreichbar. Google verlangt eine öffentliche Datenschutzerklärung. */
+const PUBLIC_PATHS = ['/login', '/datenschutz']
+
 export default async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request })
 
@@ -27,15 +30,16 @@ export default async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  const isLogin = request.nextUrl.pathname.startsWith('/login')
+  const { pathname } = request.nextUrl
+  const isPublic = PUBLIC_PATHS.some((path) => pathname.startsWith(path))
 
-  if (!user && !isLogin) {
+  if (!user && !isPublic) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
   }
 
-  if (user && isLogin) {
+  if (user && pathname === '/login') {
     const url = request.nextUrl.clone()
     url.pathname = '/bewerbungen'
     return NextResponse.redirect(url)
@@ -45,5 +49,7 @@ export default async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
+  matcher: [
+    '/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+  ],
 }
