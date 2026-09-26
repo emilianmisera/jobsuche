@@ -8,7 +8,13 @@ export const GMAIL_SCOPE = 'https://www.googleapis.com/auth/gmail.readonly'
 function config() {
   const clientId = process.env.GOOGLE_CLIENT_ID
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET
-  const redirectUri = process.env.GOOGLE_REDIRECT_URI
+
+  // In der Produktion aus der Domain gebaut, lokal aus der Env-Variable
+  const redirectUri =
+    process.env.GOOGLE_REDIRECT_URI ??
+    (process.env.NEXT_PUBLIC_SITE_URL
+      ? `${process.env.NEXT_PUBLIC_SITE_URL}/api/gmail/callback`
+      : undefined)
 
   if (!clientId || !clientSecret || !redirectUri) {
     throw new Error('Google OAuth ist nicht konfiguriert.')
